@@ -118,7 +118,7 @@ def mask2lookup_table(mask, nrows, ncols, gridSize, wsi_highest_magnification, t
     YBcenter = (fromy + toy) / 2
 
     # for each backend cell (boxA) find the nearest frontend cell (boxB)
-    n_neighbors = int((scaling_factor + 1) ** 2)
+    n_neighbors = int(((gridSize_backend * scaling_factor/ gridSize) + 1) ** 2)
     nbrs = NearestNeighbors(n_neighbors=n_neighbors).fit(np.hstack([YBcenter.reshape(-1, 1), XBcenter.reshape(-1, 1)]))
     _, indices = nbrs.kneighbors(np.hstack([YAcenter.reshape(-1, 1), XAcenter.reshape(-1, 1)]))
 
@@ -169,7 +169,7 @@ def lookup_table2mask(nrows, ncols, gridSize, wsi_highest_magnification, table):
     YBcenter = (fromy + toy) / 2
 
     # for each frontend cell (boxA) find the nearest backend cell (boxB)
-    n_neighbors = int((scaling_factor + 1) ** 2)
+    n_neighbors = int((gridSize / (gridSize_backend * scaling_factor) + 1) ** 2)
     nbrs = NearestNeighbors(n_neighbors=n_neighbors).fit(np.hstack([YBcenter.reshape(-1, 1), XBcenter.reshape(-1, 1)]))
     _, indices = nbrs.kneighbors(np.hstack([YAcenter.reshape(-1, 1), XAcenter.reshape(-1, 1)]))
 
