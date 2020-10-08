@@ -249,8 +249,27 @@ def propagate_label(request):
     :param request: must be a json containing ('bucket', 'image', 'nCols', 'nRows', 'gridSize', 'mask', 'idToken')
     :return:
     """
-    if request.method != 'POST':
+
+    # Handle CORS
+    # https://cloud.google.com/functions/docs/writing/http#handling_cors_requests
+    if request.method == 'OPTIONS':
+        # Allows POST requests from any origin with the Content-Type
+        # header and caches preflight response for an 3600s
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Max-Age': '3600'
+        }
+
+        return ('', 204, headers)
+    elif request.method != 'POST': 
         return 'Only POST requests are accepted', 405
+
+    # Set CORS headers for the main request
+    headers = {
+        'Access-Control-Allow-Origin': '*'
+    }
 
     # request json
     request_json = request.get_json(force=True)
@@ -314,4 +333,4 @@ def propagate_label(request):
         # matching pseudo labels with the frontend grid
         mask = lookup_table2mask(nrows, ncols, gridSize, wsi_highest_magnification, lookup_table)
 
-        return jsonify({'mask': mask.tolist()})
+        return (jsonify({'mask': mask.tolist()}), 200, headers)
