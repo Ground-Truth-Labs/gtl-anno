@@ -36,6 +36,9 @@ storage_client = storage.Client()
 if not firebase_admin._apps:
     default_app = firebase_admin.initialize_app()
 
+# initialise global variables
+lookup_table = None
+Wn = None
 
 def splitall(path):
     # https://www.oreilly.com/library/view/python-cookbook/0596001673/ch04s16.html
@@ -263,6 +266,9 @@ def propagate_label(request):
     :param request: must be a json containing ('bucket', 'image', 'nCols', 'nRows', 'gridSize', 'mask', 'idToken')
     :return:
     """
+    
+    global lookup_table
+    global Wn
 
     # Handle CORS
     # https://cloud.google.com/functions/docs/writing/http#handling_cors_requests
@@ -326,8 +332,10 @@ def propagate_label(request):
         wsi_highest_magnification = 40.0
 
         # loading lookup table and adjacency matrix
-        lookup_table = read_lookuptable(bucket_name, table_blob)
-        Wn = read_adj_matrix(bucket_name, matrix_blob)
+        if not lookup_table:
+            lookup_table = read_lookuptable(bucket_name, table_blob)
+        if not Wn: 
+            Wn = read_adj_matrix(bucket_name, matrix_blob)
 
         # matching label from mask to the lookup table
         mask = np.array(eval(request_json['mask']))
