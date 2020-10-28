@@ -332,9 +332,9 @@ def propagate_label(request):
         wsi_highest_magnification = 40.0
 
         # loading lookup table and adjacency matrix
-        if not lookup_table:
+        if lookup_table is None:
             lookup_table = read_lookuptable(bucket_name, table_blob)
-        if not Wn: 
+        if Wn is None: 
             Wn = read_adj_matrix(bucket_name, matrix_blob)
 
         # matching label from mask to the lookup table
