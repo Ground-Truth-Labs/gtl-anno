@@ -15,6 +15,20 @@ from tensorflow.python.lib.io import file_io
 
 import firebase_admin.auth
 
+# Try to profile the GCP function.
+# https://cloud.google.com/profiler/docs/profiling-python#standard-environment
+import googlecloudprofiler
+
+# Profiler initialization. It starts a daemon thread which continuously
+# collects and uploads profiles. Best done as early as possible.
+try:
+    # service and service_version can be automatically inferred when
+    # running on App Engine. project_id must be set if not running
+    # on GCP.
+    googlecloudprofiler.start(verbose=3)
+except (ValueError, NotImplementedError) as exc:
+    print(exc)  # Handle errors here
+
 # this is required to read data from the storage
 storage_client = storage.Client()
 
